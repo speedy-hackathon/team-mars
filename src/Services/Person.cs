@@ -13,12 +13,10 @@ namespace covidSim.Services
         {
             Id = id;
             HomeId = homeId;
+            homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
+            Position = GetNewPersonAtHomePosition();
+            nextPosition = GetNewPersonAtHomePosition();
             IsSick = isSick;
-
-            var homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
-            var x = homeCoords.X + random.Next(HouseCoordinates.Width);
-            var y = homeCoords.Y + random.Next(HouseCoordinates.Height);
-            Position = new Vec(x, y);
         }
 
 
@@ -26,6 +24,8 @@ namespace covidSim.Services
         public int Id;
         public int HomeId;
         public Vec Position;
+        private Vec nextPosition;
+        private Vec homeCoords;
 
         public void CalcNextStep()
         {
@@ -46,10 +46,35 @@ namespace covidSim.Services
         private void CalcNextStepForPersonAtHome()
         {
             var goingWalk = random.NextDouble() < 0.005;
-            if (!goingWalk) return;
+            if (!goingWalk)
+            {
+                if (nextPosition.X == Position.X && nextPosition.Y == Position.Y)
+                {
+                    nextPosition = GetNewPersonAtHomePosition();
+                }
+
+                var distanceX = Math.Abs(Position.X - nextPosition.X);
+                var distanceY = Math.Abs(Position.Y - nextPosition.Y);
+                var deltaX = random.Next(MaxDistancePerTurn);
+                var deltaY = random.Next(MaxDistancePerTurn);
+
+                deltaX = Math.Min(distanceX, deltaX) * Math.Sign(nextPosition.X - Position.X);
+                deltaY = Math.Min(distanceY, deltaY) * Math.Sign(nextPosition.Y - Position.Y);
+
+                Position = new Vec(Position.X + deltaX, Position.Y + deltaY);
+
+                return;
+            }
 
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
+        }
+
+        private Vec GetNewPersonAtHomePosition()
+        {
+            var x = homeCoords.X + random.Next(HouseCoordinates.Width);
+            var y = homeCoords.Y + random.Next(HouseCoordinates.Height);
+            return new Vec(x, y);
         }
 
         private void CalcNextPositionForWalkingPerson()
