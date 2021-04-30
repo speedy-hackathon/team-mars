@@ -112,7 +112,7 @@ export default class App extends React.Component {
   changeNight = (isNight) => {
     this.setState({
       isNight: !isNight,
-      localTicks: 0,
+      localTicks: 1,
     })
   };
 }
