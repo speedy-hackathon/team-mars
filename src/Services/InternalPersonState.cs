@@ -7,6 +7,8 @@ namespace covidSim.Services
     {
         Healthy,
         Sick,
-        Bored
+        Bored,
+        Dead,
+        NeedDeleted
     }
 }

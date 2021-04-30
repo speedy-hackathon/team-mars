@@ -37,10 +37,16 @@ namespace covidSim.Services
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
+        private int stepsInDead;
         private int stepsWithSick;
 
         public void CalcNextStep(IEnumerable<Person> persons)
         {
+            ProcessDeadState();
+            
+            if (InternalState == InternalPersonState.Dead)
+                return;
+           
             ProcessSickState();
             switch (state)
             {
@@ -56,6 +62,21 @@ namespace covidSim.Services
                     CalcNextPositionForGoingHomePerson();
                     break;
             }
+        }
+
+        private void ProcessDeadState()
+        {
+            if (InternalState == InternalPersonState.Sick && random.NextDouble() < 0.00003)
+            {
+                InternalState = InternalPersonState.Dead;
+                return;
+            }
+
+            if (InternalState == InternalPersonState.Dead)
+                stepsInDead++;
+
+            if (stepsInDead >= 10)
+                InternalState = InternalPersonState.NeedDeleted;
         }
 
         private void CheckPersonForInfection(IEnumerable<Person> persons)

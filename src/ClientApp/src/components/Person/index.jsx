@@ -13,6 +13,9 @@ export default function Person({ person, onClick }) {
     case "Bored":
       classState = styles.boring;
       break;
+    case "Dead":
+      classState = styles.dead;
+      break;
   }
   return (
     <div
