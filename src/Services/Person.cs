@@ -67,9 +67,9 @@ namespace covidSim.Services
             {
                 if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
                 {
+                    stepHomeCount++;
                     if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
                         InternalState = InternalPersonState.Bored;
-                    stepHomeCount++;
                 }
                 else
                 {
