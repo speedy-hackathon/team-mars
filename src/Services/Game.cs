@@ -77,9 +77,9 @@ namespace covidSim.Services
         private void CalcNextStep()
         {
             _lastUpdate = DateTime.Now;
-            foreach (var person in People)
+            foreach (var person in People.ToArray())
             {
-                person.CalcNextStep();
+                person.CalcNextStep(People);
             }
         }
     }

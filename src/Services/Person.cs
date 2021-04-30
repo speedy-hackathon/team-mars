@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using covidSim.Models;
 
 namespace covidSim.Services
@@ -29,9 +30,11 @@ namespace covidSim.Services
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
+        private int StepsInDead;
 
-        public void CalcNextStep()
+        public void CalcNextStep(List<Person> people)
         {
+            ProcessDeadState(people);
             switch (state)
             {
                 case PersonState.AtHome:
@@ -44,6 +47,21 @@ namespace covidSim.Services
                     CalcNextPositionForGoingHomePerson();
                     break;
             }
+        }
+
+        private void ProcessDeadState(List<Person> people)
+        {
+            if (InternalState == InternalPersonState.Sick && random.NextDouble() < 0.00003)
+            {
+                InternalState = InternalPersonState.Dead;
+                return;
+            }
+
+            if (InternalState == InternalPersonState.Dead)
+                StepsInDead++;
+
+            if (StepsInDead >= 10)
+                people.Remove(this);
         }
 
         private void CalcNextStepForPersonAtHome()
