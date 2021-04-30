@@ -22,7 +22,6 @@ namespace covidSim.Services
             nextPosition = GetNewPersonAtHomePosition();
         }
 
-
         public InternalPersonState InternalState;
         public int Id;
         public int HomeId;
@@ -33,8 +32,6 @@ namespace covidSim.Services
 
         public void CalcNextStep()
         {
-            
-            
             switch (state)
             {
                 case PersonState.AtHome:
@@ -51,7 +48,7 @@ namespace covidSim.Services
 
         private void CalcNextStepForPersonAtHome()
         {
-            var goingWalk = random.NextDouble() < 0.005;
+            var goingWalk = random.NextDouble() < 0.05;
             if (!goingWalk)
             {
                 if (nextPosition.X == Position.X && nextPosition.Y == Position.Y)
@@ -59,18 +56,10 @@ namespace covidSim.Services
                     nextPosition = GetNewPersonAtHomePosition();
                 }
 
-                if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
-                {
-                    stepHomeCount++;
-                    if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
-                        InternalState = InternalPersonState.Bored;
-                }
-                else
-                {
-                    stepHomeCount = 0;
-                    InternalState = InternalPersonState.None;
-                }
-                
+                stepHomeCount++;
+                if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
+                    InternalState = InternalPersonState.Bored;
+
                 var distanceX = Math.Abs(Position.X - nextPosition.X);
                 var distanceY = Math.Abs(Position.Y - nextPosition.Y);
                 var deltaX = random.Next(MaxDistancePerTurn);
@@ -86,15 +75,8 @@ namespace covidSim.Services
 
             stepHomeCount = 0;
             InternalState = InternalPersonState.None;
-
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
-        }
-        
-        private bool IsPersonInHome(Vec nextPos, HouseCoordinates coordinates)
-        {
-            return (coordinates.LeftTopCorner.X <= nextPos.X) && (coordinates.LeftTopCorner.X + HouseCoordinates.Width >= nextPos.X) &&
-                   (coordinates.LeftTopCorner.Y <= nextPos.Y) && (coordinates.LeftTopCorner.Y + HouseCoordinates.Height >= nextPos.Y);
         }
 
         private Vec GetNewPersonAtHomePosition()
@@ -110,11 +92,11 @@ namespace covidSim.Services
             var yLength = MaxDistancePerTurn - xLength;
             var direction = ChooseDirection();
             var delta = new Vec(xLength * direction.X, yLength * direction.Y);
-            var nextPos = new Vec(Position.X + delta.X, Position.Y + delta.Y);
+            var nextPosition = new Vec(Position.X + delta.X, Position.Y + delta.Y);
 
-            if (isCoordInField(nextPos) )
+            if (isCoordInField(nextPosition))
             {
-                Position = nextPos;
+                Position = nextPosition;
             }
             else
             {
@@ -126,7 +108,8 @@ namespace covidSim.Services
         {
             var game = Game.Instance;
             var homeCoord = game.Map.Houses[HomeId].Coordinates.LeftTopCorner;
-            var homeCenter = new Vec(homeCoord.X + HouseCoordinates.Width / 2, homeCoord.Y + HouseCoordinates.Height / 2);
+            var homeCenter = new Vec(homeCoord.X + HouseCoordinates.Width / 2,
+                homeCoord.Y + HouseCoordinates.Height / 2);
 
             var xDiff = homeCenter.X - Position.X;
             var yDiff = homeCenter.Y - Position.Y;
@@ -143,7 +126,7 @@ namespace covidSim.Services
 
             var direction = new Vec(Math.Sign(xDiff), Math.Sign(yDiff));
 
-            var xLength = Math.Min(xDistance, MaxDistancePerTurn); 
+            var xLength = Math.Min(xDistance, MaxDistancePerTurn);
             var newX = Position.X + xLength * direction.X;
             var yLength = MaxDistancePerTurn - xLength;
             var newY = Position.Y + yLength * direction.Y;
