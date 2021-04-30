@@ -59,7 +59,7 @@ namespace covidSim.Services
             }
 
             stepsWithSick++;
-            if (stepsWithSick == StepsForHealing)
+            if (stepsWithSick >= StepsForHealing)
                 InternalState = InternalPersonState.Healthy;
         }
 
