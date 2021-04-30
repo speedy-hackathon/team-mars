@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using covidSim.Models;
 
 namespace covidSim.Services
@@ -6,12 +7,13 @@ namespace covidSim.Services
     public class Person
     {
         private const int MaxDistancePerTurn = 30;
+        private const int StepsForHealing = 45;
         private static Random random = new Random();
         private PersonState state = PersonState.AtHome;
         private int stepHomeCount;
         private CityMap cityMap;
 
-        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.None)
+        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.Healthy)
         {
             Id = id;
             HomeId = homeId;
@@ -29,9 +31,11 @@ namespace covidSim.Services
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
+        private int stepsWithSick;
 
         public void CalcNextStep()
         {
+            ProcessSickState();
             switch (state)
             {
                 case PersonState.AtHome:
@@ -44,6 +48,19 @@ namespace covidSim.Services
                     CalcNextPositionForGoingHomePerson();
                     break;
             }
+        }
+
+        private void ProcessSickState()
+        {
+            if (InternalState != InternalPersonState.Sick)
+            {
+                stepsWithSick = 0;
+                return;
+            }
+
+            stepsWithSick++;
+            if (stepsWithSick == StepsForHealing)
+                InternalState = InternalPersonState.Healthy;
         }
 
         private void CalcNextStepForPersonAtHome()
@@ -99,7 +116,7 @@ namespace covidSim.Services
                 else
                 {
                     stepHomeCount = 0;
-                    InternalState = InternalPersonState.None;
+                    InternalState = InternalPersonState.Healthy;
                 }
                 
                 Position = nextPosition;
