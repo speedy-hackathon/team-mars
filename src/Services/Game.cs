@@ -83,7 +83,7 @@ namespace covidSim.Services
             _lastUpdate = DateTime.Now;
             foreach (var person in People)
             {
-                person.CalcNextStep();
+                person.CalcNextStep(People.Where(e => e != person).ToArray());
                 person.IncreaseAge();
             }
             Ticks += 1;

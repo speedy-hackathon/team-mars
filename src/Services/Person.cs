@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using covidSim.Models;
 
 namespace covidSim.Services
@@ -34,7 +35,7 @@ namespace covidSim.Services
         private Vec homeCoords;
         private int sickStepsCount;
 
-        public void CalcNextStep()
+        public void CalcNextStep(Person[] persons)
         {
             switch (state)
             {
@@ -43,11 +44,27 @@ namespace covidSim.Services
                     break;
                 case PersonState.Walking:
                     CalcNextPositionForWalkingPerson();
+                    if (InternalState != InternalPersonState.Sick) 
+                        CheckPersonForInfection(persons);
                     break;
                 case PersonState.GoingHome:
                     CalcNextPositionForGoingHomePerson();
                     break;
             }
+        }
+
+        private void CheckPersonForInfection(Person[] persons)
+        {
+            if (persons.Any(anotherPerson => DistanceBetweenPoints(Position, anotherPerson.Position) <= 7 &&
+                                             anotherPerson.InternalState == InternalPersonState.Sick) &&
+                random.NextDouble() <= 0.5)
+                InternalState = InternalPersonState.Sick;
+        }
+
+        private int DistanceBetweenPoints(Vec first, Vec second)
+        {
+            return (int) Math.Sqrt((first.X - second.X) * (first.X - second.X) +
+                                   (first.Y - second.Y) * (first.Y - second.Y));
         }
 
         public void IncreaseAge() => age++;
