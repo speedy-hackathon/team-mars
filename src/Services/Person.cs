@@ -91,7 +91,8 @@ namespace covidSim.Services
         {
             return (int) Math.Sqrt((first.X - second.X) * (first.X - second.X) +
                                    (first.Y - second.Y) * (first.Y - second.Y));
-          
+        }
+
         private void ProcessSickState()
         {
             if (InternalState != InternalPersonState.Sick)
