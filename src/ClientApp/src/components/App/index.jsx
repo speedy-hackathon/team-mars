@@ -17,6 +17,8 @@ export default class App extends React.Component {
       people: [],
       map: [],
       instructionOpen: true,
+      dictionary: new Map(),
+      clickedPerson: null,
       ticks: 0,
     };
     this.intervalId = null;
@@ -34,6 +36,13 @@ export default class App extends React.Component {
       <div className={styles.root}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
         <h1 className={styles.title}>Симулятор COVID</h1>
+        <Field
+          map={map}
+          people={people}
+          onClick={this.personClick}
+          clickedPerson={this.state.clickedPerson}
+          dictionary={this.state.dictionary.get(this.state.clickedPerson)}
+        />
         <ButtonRestart />
         <Timer ticks={ticks} />
         <Field map={map} people={people} onClick={this.personClick} />
@@ -61,6 +70,7 @@ export default class App extends React.Component {
         personClicked: id,
       }),
     }).then(errorHandler);
+    this.setState({clickedPerson:id});
   };
 
   getNewStateFromServer = () => {
@@ -71,8 +81,22 @@ export default class App extends React.Component {
         this.setState({
           people: game.people,
           map: game.map.houses.map((i) => i.coordinates.leftTopCorner),
+          dictionary: this.addNewPos(game.people, this.state.dictionary),
           ticks: game.ticks
         });
       });
   };
+
+  addNewPos = (people, oldPos) => {
+    people.map(person => {
+      if(Math.random()>0.98) {
+      }
+      if (oldPos.get(person.id)) {
+        oldPos.set(person.id, [...oldPos.get(person.id), person.position]);
+      } else {
+        oldPos.set(person.id, [person.position]);
+      }
+    });
+    return oldPos;
+  }
 }
