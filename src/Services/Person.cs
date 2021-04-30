@@ -32,10 +32,10 @@ namespace covidSim.Services
                     CalcNextStepForPersonAtHome();
                     break;
                 case PersonState.Walking:
-                    CalcnextPositionForWalkingPerson();
+                    CalcNextPositionForWalkingPerson();
                     break;
                 case PersonState.GoingHome:
-                    CalcnextPositionForGoingHomePerson();
+                    CalcNextPositionForGoingHomePerson();
                     break;
             }
         }
@@ -64,7 +64,7 @@ namespace covidSim.Services
             }
 
             state = PersonState.Walking;
-            CalcnextPositionForWalkingPerson();
+            CalcNextPositionForWalkingPerson();
         }
 
         private Vec GetNewPersonAtHomePosition()
@@ -74,7 +74,7 @@ namespace covidSim.Services
             return new Vec(x, y);
         }
 
-        private void CalcnextPositionForWalkingPerson()
+        private void CalcNextPositionForWalkingPerson()
         {
             var xLength = random.Next(MaxDistancePerTurn);
             var yLength = MaxDistancePerTurn - xLength;
@@ -88,11 +88,11 @@ namespace covidSim.Services
             }
             else
             {
-                CalcnextPositionForWalkingPerson();
+                CalcNextPositionForWalkingPerson();
             }
         }
 
-        private void CalcnextPositionForGoingHomePerson()
+        private void CalcNextPositionForGoingHomePerson()
         {
             var game = Game.Instance;
             var homeCoord = game.Map.Houses[HomeId].Coordinates.LeftTopCorner;
@@ -125,7 +125,7 @@ namespace covidSim.Services
             if (state != PersonState.Walking) return;
 
             state = PersonState.GoingHome;
-            CalcnextPositionForGoingHomePerson();
+            CalcNextPositionForGoingHomePerson();
         }
 
         private Vec ChooseDirection()
