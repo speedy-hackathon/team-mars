@@ -8,7 +8,7 @@ export default function Person({ person, onClick }) {
   const isSick = person.isSick;
   return (
     <div
-        className={styles.root + (isSick ? + " " + styles.sick : "")}
+        className={styles.root + (isSick ? " " + styles.sick : "")}
         style={{left: `${x}%`, top: `${y}%`}}
         onClick={() => onClick(person.id)}
     />
