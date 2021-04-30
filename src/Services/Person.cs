@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using covidSim.Models;
@@ -38,7 +39,7 @@ namespace covidSim.Services
         private Vec homeCoords;
         private int stepsWithSick;
 
-        public void CalcNextStep(Person[] persons)
+        public void CalcNextStep(IEnumerable<Person> persons)
         {
             ProcessSickState();
             switch (state)
@@ -57,7 +58,7 @@ namespace covidSim.Services
             }
         }
 
-        private void CheckPersonForInfection(Person[] persons)
+        private void CheckPersonForInfection(IEnumerable<Person> persons)
         {
             if (persons.Any(anotherPerson => DistanceBetweenPoints(Position, anotherPerson.Position) <= 7 &&
                                              anotherPerson.InternalState == InternalPersonState.Sick) &&
