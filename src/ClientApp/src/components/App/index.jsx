@@ -5,6 +5,7 @@ import { DELAY, MAX_HEIGHT, MAX_WIDTH } from "../../consts/sizes";
 import { gameStateUrl, userActionUrl } from "../../consts/urls";
 import errorHandler from "../../utils/errorHandler";
 import Instruction from "../Instruction";
+import ButtonRestart from "../ButtonRestart";
 
 import "./base.css";
 
@@ -30,7 +31,8 @@ export default class App extends React.Component {
     return (
       <div className={styles.root}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
-        <h1 className={styles.title}>COVID-симулятор</h1>
+        <h1 className={styles.title}>Симулятор COVID</h1>
+        <ButtonRestart />
         <Field map={map} people={people} onClick={this.personClick} />
       </div>
     );

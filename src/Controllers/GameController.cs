@@ -13,5 +13,12 @@ namespace covidSim.Controllers
             game = game.GetNextState();
             return Ok(game);
         }
+
+        [HttpPost]
+        public IActionResult Restart()
+        {
+            var game = Game.Restart;
+            return Ok(game);
+        }
     }
 }
