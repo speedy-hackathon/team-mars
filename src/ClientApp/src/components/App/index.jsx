@@ -47,7 +47,7 @@ export default class App extends React.Component {
       <div className={`${styles.root} app-container ${this.checkNight(isNight)}`}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
         <h1 className={styles.title}>Симулятор COVID</h1>
-        <ButtonRestart />
+        <ButtonRestart restart={this.restart}/>
         <ButtonDayNight
           changeNight={this.changeNight}
           isNight={isNight}
@@ -115,4 +115,15 @@ export default class App extends React.Component {
       localTicks: 1,
     })
   };
+
+  restart = () => {
+    fetch(gameStateUrl, {
+      method: "POST"
+    }).then(errorHandler);
+
+    this.setState({
+      isNight: false,
+      localTicks: 1,
+    })
+  }
 }
