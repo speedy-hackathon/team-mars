@@ -5,6 +5,7 @@ import House from "../House";
 import {v4 as uuidv4} from 'uuid';
 
 export default function Field({map, people, onClick, clickedPerson, dictionary}) {
+
   if (clickedPerson) {
     const ctx = createContext();
     for (let i = 0; i < dictionary.length - 1; i++) {
@@ -16,8 +17,8 @@ export default function Field({map, people, onClick, clickedPerson, dictionary})
   function createContext() {
     let example = document.getElementById("canvas");
     let ctx = example.getContext('2d');
-    example.height = 500;
-    example.width = 1000;
+    example.width = 1034;
+    example.height = 522;
     return ctx;
   }
 
@@ -32,7 +33,7 @@ export default function Field({map, people, onClick, clickedPerson, dictionary})
 
   return (
     <div className={styles.root}>
-      <canvas id="canvas">
+      <canvas id="canvas" className={styles.canvas}>
 
       </canvas>
       {map.map((item, i) => (
