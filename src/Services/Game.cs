@@ -40,16 +40,16 @@ namespace covidSim.Services
             var healthyPeople = CreatePeoples(
                 PeopleCount - sickPeopleCount);
             var sickPeople = CreatePeoples(
-                sickPeopleCount, true);
+                sickPeopleCount, InternalPersonState.Sick);
 
             return healthyPeople.Concat(sickPeople).ToList();
         }
 
-        private IEnumerable<Person> CreatePeoples(int count, bool sick = false)
+        private IEnumerable<Person> CreatePeoples(int count, InternalPersonState internalPersonState = InternalPersonState.None)
         {
             return Enumerable
                 .Repeat(0, count)
-                .Select((_, index) => new Person(index, FindHome(), Map, sick));
+                .Select((_, index) => new Person(index, FindHome(), Map, internalPersonState));
         }
 
         private int FindHome()
