@@ -1,0 +1,8 @@
+.container {
+  display: flex;
+  margin: 20px 0;
+}
+
+.timer {
+  margin: auto;
+}

@@ -6,6 +6,7 @@ import { gameStateUrl, userActionUrl } from "../../consts/urls";
 import errorHandler from "../../utils/errorHandler";
 import Instruction from "../Instruction";
 import ButtonRestart from "../ButtonRestart";
+import Timer from "../Timer";
 
 import "./base.css";
 
@@ -16,6 +17,7 @@ export default class App extends React.Component {
       people: [],
       map: [],
       instructionOpen: true,
+      ticks: 0,
     };
     this.intervalId = null;
   }
@@ -27,12 +29,13 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { people, map, instructionOpen } = this.state;
+    const { people, map, instructionOpen, ticks } = this.state;
     return (
       <div className={styles.root}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
         <h1 className={styles.title}>Симулятор COVID</h1>
         <ButtonRestart />
+        <Timer ticks={ticks} />
         <Field map={map} people={people} onClick={this.personClick} />
       </div>
     );
@@ -68,6 +71,7 @@ export default class App extends React.Component {
         this.setState({
           people: game.people,
           map: game.map.houses.map((i) => i.coordinates.leftTopCorner),
+          ticks: game.ticks
         });
       });
   };
