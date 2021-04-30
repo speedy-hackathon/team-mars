@@ -23,7 +23,6 @@ namespace covidSim.Services
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
-        private Vec direction;
 
         public void CalcNextStep()
         {
