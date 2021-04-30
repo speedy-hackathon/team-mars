@@ -5,6 +5,12 @@ import House from "../House";
 import {v4 as uuidv4} from 'uuid';
 
 export default function Field({map, people, onClick, clickedPerson, dictionary}) {
+  let height = 0;
+  let width = 0;
+  useEffect(() => {
+    width = document.getElementById("field").clientWidth;
+    height = document.getElementById("field").clientHeight;
+  }, []);
 
   if (clickedPerson) {
     const ctx = createContext();
@@ -32,7 +38,7 @@ export default function Field({map, people, onClick, clickedPerson, dictionary})
 
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} id="field">
       <canvas id="canvas" className={styles.canvas}>
 
       </canvas>
