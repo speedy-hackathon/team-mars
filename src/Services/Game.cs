@@ -84,10 +84,9 @@ namespace covidSim.Services
             _lastUpdate = DateTime.Now;
             foreach (var person in People.ToArray())
             {
-                person.CalcNextStep(People);
+                person.CalcNextStep(People.Where(e => e != person));
                 if (person.InternalState == InternalPersonState.NeedDeleted)
                     People.Remove(person);
-                person.CalcNextStep();
                 person.IncreaseAge();
             }
             Ticks += 1;

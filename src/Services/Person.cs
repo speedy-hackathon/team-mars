@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using covidSim.Models;
 
@@ -39,7 +40,7 @@ namespace covidSim.Services
         private int stepsInDead;
         private int stepsWithSick;
 
-        public void CalcNextStep(IEnumerable<Person> people)
+        public void CalcNextStep(IEnumerable<Person> persons)
         {
             ProcessDeadState();
             
@@ -54,6 +55,8 @@ namespace covidSim.Services
                     break;
                 case PersonState.Walking:
                     CalcNextPositionForWalkingPerson();
+                    if (InternalState != InternalPersonState.Sick) 
+                        CheckPersonForInfection(persons);
                     break;
                 case PersonState.GoingHome:
                     CalcNextPositionForGoingHomePerson();
@@ -76,6 +79,19 @@ namespace covidSim.Services
                 InternalState = InternalPersonState.NeedDeleted;
         }
 
+        private void CheckPersonForInfection(IEnumerable<Person> persons)
+        {
+            if (persons.Any(anotherPerson => DistanceBetweenPoints(Position, anotherPerson.Position) <= 7 &&
+                                             anotherPerson.InternalState == InternalPersonState.Sick) &&
+                random.NextDouble() <= 0.5)
+                InternalState = InternalPersonState.Sick;
+        }
+
+        private int DistanceBetweenPoints(Vec first, Vec second)
+        {
+            return (int) Math.Sqrt((first.X - second.X) * (first.X - second.X) +
+                                   (first.Y - second.Y) * (first.Y - second.Y));
+          
         private void ProcessSickState()
         {
             if (InternalState != InternalPersonState.Sick)
