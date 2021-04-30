@@ -29,9 +29,12 @@ namespace covidSim.Services
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
+        private int sickStepsCount;
 
         public void CalcNextStep()
         {
+            
+            
             switch (state)
             {
                 case PersonState.AtHome:
@@ -56,6 +59,18 @@ namespace covidSim.Services
                     nextPosition = GetNewPersonAtHomePosition();
                 }
 
+                if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
+                {
+                    stepHomeCount++;
+                    if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
+                        InternalState = InternalPersonState.Bored;
+                }
+                else
+                {
+                    stepHomeCount = 0;
+                    InternalState = InternalPersonState.None;
+                }
+                
                 var distanceX = Math.Abs(Position.X - nextPosition.X);
                 var distanceY = Math.Abs(Position.Y - nextPosition.Y);
                 var deltaX = random.Next(MaxDistancePerTurn);
@@ -69,8 +84,17 @@ namespace covidSim.Services
                 return;
             }
 
+            stepHomeCount = 0;
+            InternalState = InternalPersonState.None;
+
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
+        }
+        
+        private bool IsPersonInHome(Vec nextPos, HouseCoordinates coordinates)
+        {
+            return (coordinates.LeftTopCorner.X <= nextPos.X) && (coordinates.LeftTopCorner.X + HouseCoordinates.Width >= nextPos.X) &&
+                   (coordinates.LeftTopCorner.Y <= nextPos.Y) && (coordinates.LeftTopCorner.Y + HouseCoordinates.Height >= nextPos.Y);
         }
 
         private Vec GetNewPersonAtHomePosition()
@@ -86,34 +110,16 @@ namespace covidSim.Services
             var yLength = MaxDistancePerTurn - xLength;
             var direction = ChooseDirection();
             var delta = new Vec(xLength * direction.X, yLength * direction.Y);
-            var nextPosition = new Vec(Position.X + delta.X, Position.Y + delta.Y);
+            var nextPos = new Vec(Position.X + delta.X, Position.Y + delta.Y);
 
-            if (isCoordInField(nextPosition) )
+            if (isCoordInField(nextPos) )
             {
-                if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
-                {
-                    stepHomeCount++;
-                    if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
-                        InternalState = InternalPersonState.Bored;
-                }
-                else
-                {
-                    stepHomeCount = 0;
-                    InternalState = InternalPersonState.None;
-                }
-                
-                Position = nextPosition;
+                Position = nextPos;
             }
             else
             {
                 CalcNextPositionForWalkingPerson();
             }
-        }
-
-        private bool IsPersonInHome(Vec nextPos, HouseCoordinates coordinates)
-        {
-            return (coordinates.LeftTopCorner.X <= nextPos.X) && (coordinates.LeftTopCorner.X + HouseCoordinates.Width >= nextPos.X) &&
-                (coordinates.LeftTopCorner.Y <= nextPos.Y) && (coordinates.LeftTopCorner.Y + HouseCoordinates.Height >= nextPos.Y);
         }
 
         private void CalcNextPositionForGoingHomePerson()
