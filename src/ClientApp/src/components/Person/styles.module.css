@@ -10,3 +10,6 @@
   border-radius: 50%;
   transition: all 1s linear;
 }
+.sick {
+  background-color: red;
+}
