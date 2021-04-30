@@ -7,10 +7,10 @@ export default function Field({ map, people, onClick }) {
   return (
     <div className={styles.root}>
       {map.map((item, i) => (
-        <House key={item.id} x={item.x} y={item.y} />
+        <House key={i} x={item.x} y={item.y} />
       ))}
-      {people.map((item) => (
-        <Person person={item} key={item.id} onClick={onClick} />
+      {people.map((item, i) => (
+        <Person person={item} key={i} onClick={onClick} />
       ))}
     </div>
   );

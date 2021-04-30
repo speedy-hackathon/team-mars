@@ -14,7 +14,7 @@ export default function House({ x, y }) {
   const height = (HOUSE_HEIGHT / MAX_HEIGHT) * 100;
   return (
     <div
-      className={styles.root}
+      className={`${styles.root} house`}
       style={{
         left: `${left}%`,
         top: `${top}%`,
