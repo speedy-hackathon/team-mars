@@ -2,7 +2,6 @@ import React, {useEffect} from "react";
 import styles from "./styles.module.css";
 import Person from "../Person";
 import House from "../House";
-import {v4 as uuidv4} from 'uuid';
 
 export default function Field({map, people, onClick, clickedPerson, dictionary}) {
   let height = 0;
@@ -43,7 +42,7 @@ export default function Field({map, people, onClick, clickedPerson, dictionary})
 
       </canvas>
       {map.map((item, i) => (
-        <House key={uuidv4()} x={item.x} y={item.y}/>
+        <House key={item.id} x={item.x} y={item.y} />
       ))}
       {people.map((item) => (
         <Person person={item} key={item.id} onClick={onClick}/>

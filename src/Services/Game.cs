@@ -8,6 +8,7 @@ namespace covidSim.Services
     {
         public List<Person> People;
         public CityMap Map;
+        public int Ticks = 0;
         private DateTime _lastUpdate;
 
         private static Game _gameInstance;
@@ -27,6 +28,11 @@ namespace covidSim.Services
 
         public static Game Instance => _gameInstance ?? (_gameInstance = new Game());
 
+        public static void Restart()
+        {
+            _gameInstance = new Game();
+        }
+
         private List<Person> CreatePopulation()
         {
             var sickPeopleCount = (int) Math.Ceiling(PeopleCount * 0.05);
@@ -39,7 +45,8 @@ namespace covidSim.Services
             return healthyPeople.Concat(sickPeople).ToList();
         }
 
-        private IEnumerable<Person> CreatePeoples(int count, InternalPersonState internalPersonState = InternalPersonState.None)
+        private IEnumerable<Person> CreatePeoples(int count, InternalPersonState internalPersonState = InternalPersonState.Healthy)
+          
         {
             return Enumerable
                 .Repeat(0, count)
@@ -78,7 +85,9 @@ namespace covidSim.Services
             foreach (var person in People)
             {
                 person.CalcNextStep();
+                person.IncreaseAge();
             }
+            Ticks += 1;
         }
     }
 }

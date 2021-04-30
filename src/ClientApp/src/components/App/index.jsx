@@ -5,6 +5,8 @@ import { DELAY, MAX_HEIGHT, MAX_WIDTH } from "../../consts/sizes";
 import { gameStateUrl, userActionUrl } from "../../consts/urls";
 import errorHandler from "../../utils/errorHandler";
 import Instruction from "../Instruction";
+import ButtonRestart from "../ButtonRestart";
+import Timer from "../Timer";
 
 import "./base.css";
 
@@ -17,6 +19,7 @@ export default class App extends React.Component {
       instructionOpen: true,
       dictionary: new Map(),
       clickedPerson: null
+      ticks: 0,
     };
     this.intervalId = null;
   }
@@ -28,7 +31,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { people, map, instructionOpen } = this.state;
+    const { people, map, instructionOpen, ticks } = this.state;
     return (
       <div className={styles.root}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
@@ -40,6 +43,9 @@ export default class App extends React.Component {
           clickedPerson={this.state.clickedPerson}
           dictionary={this.state.dictionary.get(this.state.clickedPerson)}
         />
+        <ButtonRestart />
+        <Timer ticks={ticks} />
+        <Field map={map} people={people} onClick={this.personClick} />
       </div>
     );
   }
@@ -76,6 +82,7 @@ export default class App extends React.Component {
           people: game.people,
           map: game.map.houses.map((i) => i.coordinates.leftTopCorner),
           dictionary: this.addNewPos(game.people, this.state.dictionary)
+          ticks: game.ticks
         });
       });
   };

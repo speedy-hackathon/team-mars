@@ -1,5 +1,5 @@
 using System;
-using System.Drawing;
+using System.Diagnostics;
 using covidSim.Models;
 
 namespace covidSim.Services
@@ -7,31 +7,39 @@ namespace covidSim.Services
     public class Person
     {
         private const int MaxDistancePerTurn = 30;
+        private const int StepsForHealing = 45;
+        private const int MaxStartAge = 70;
         private static Random random = new Random();
         private PersonState state = PersonState.AtHome;
+        private int age;
         private int stepHomeCount;
         private CityMap cityMap;
 
-        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.None)
+        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.Healthy,
+            bool isNew = false)
+
         {
             Id = id;
+            age = isNew ? 0 : random.Next(MaxStartAge);
             HomeId = homeId;
             InternalState = internalState;
-            var homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
-            var x = homeCoords.X + random.Next(HouseCoordinates.Width);
-            var y = homeCoords.Y + random.Next(HouseCoordinates.Height);
-            Position = new Vec(x, y);
             cityMap = map;
+            homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
+            Position = GetNewPersonAtHomePosition();
+            nextPosition = GetNewPersonAtHomePosition();
         }
-
 
         public InternalPersonState InternalState;
         public int Id;
         public int HomeId;
         public Vec Position;
+        private Vec nextPosition;
+        private Vec homeCoords;
+        private int stepsWithSick;
 
         public void CalcNextStep()
         {
+            ProcessSickState();
             switch (state)
             {
                 case PersonState.AtHome:
@@ -46,13 +54,59 @@ namespace covidSim.Services
             }
         }
 
+        private void ProcessSickState()
+        {
+            if (InternalState != InternalPersonState.Sick)
+            {
+                stepsWithSick = 0;
+                return;
+            }
+
+            stepsWithSick++;
+            if (stepsWithSick >= StepsForHealing)
+                InternalState = InternalPersonState.Healthy;
+        }
+
+        public void IncreaseAge() => age++;
+
         private void CalcNextStepForPersonAtHome()
         {
             var goingWalk = random.NextDouble() < 0.005;
-            if (!goingWalk) return;
+            if (!goingWalk)
+            {
+                if (nextPosition.X == Position.X && nextPosition.Y == Position.Y)
+                {
+                    nextPosition = GetNewPersonAtHomePosition();
+                }
 
+                stepHomeCount++;
+                if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
+                    InternalState = InternalPersonState.Bored;
+
+                var distanceX = Math.Abs(Position.X - nextPosition.X);
+                var distanceY = Math.Abs(Position.Y - nextPosition.Y);
+                var deltaX = random.Next(MaxDistancePerTurn);
+                var deltaY = random.Next(MaxDistancePerTurn);
+                
+                deltaX = Math.Min(distanceX, deltaX) * Math.Sign(nextPosition.X - Position.X);
+                deltaY = Math.Min(distanceY, deltaY) * Math.Sign(nextPosition.Y - Position.Y);
+
+                Position = new Vec(Position.X + deltaX, Position.Y + deltaY);
+
+                return;
+            }
+
+            stepHomeCount = 0;
+            InternalState = InternalPersonState.Healthy;
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
+        }
+
+        private Vec GetNewPersonAtHomePosition()
+        {
+            var x = homeCoords.X + random.Next(HouseCoordinates.Width);
+            var y = homeCoords.Y + random.Next(HouseCoordinates.Height);
+            return new Vec(x, y);
         }
 
         private void CalcNextPositionForWalkingPerson()
@@ -65,18 +119,6 @@ namespace covidSim.Services
 
             if (isCoordInField(nextPosition) )
             {
-                if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
-                {
-                    if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
-                        InternalState = InternalPersonState.Bored;
-                    stepHomeCount++;
-                }
-                else
-                {
-                    stepHomeCount = 0;
-                    InternalState = InternalPersonState.None;
-                }
-                
                 Position = nextPosition;
             }
             else
@@ -84,18 +126,13 @@ namespace covidSim.Services
                 CalcNextPositionForWalkingPerson();
             }
         }
-
-        private bool IsPersonInHome(Vec nextPos, HouseCoordinates coordinates)
-        {
-            return (coordinates.LeftTopCorner.X <= nextPos.X) && (coordinates.LeftTopCorner.X + HouseCoordinates.Width >= nextPos.X) &&
-                (coordinates.LeftTopCorner.Y <= nextPos.Y) && (coordinates.LeftTopCorner.Y + HouseCoordinates.Height >= nextPos.Y);
-        }
-
+        
         private void CalcNextPositionForGoingHomePerson()
         {
             var game = Game.Instance;
             var homeCoord = game.Map.Houses[HomeId].Coordinates.LeftTopCorner;
-            var homeCenter = new Vec(homeCoord.X + HouseCoordinates.Width / 2, homeCoord.Y + HouseCoordinates.Height / 2);
+            var homeCenter = new Vec(homeCoord.X + HouseCoordinates.Width / 2,
+                homeCoord.Y + HouseCoordinates.Height / 2);
 
             var xDiff = homeCenter.X - Position.X;
             var yDiff = homeCenter.Y - Position.Y;
@@ -112,7 +149,7 @@ namespace covidSim.Services
 
             var direction = new Vec(Math.Sign(xDiff), Math.Sign(yDiff));
 
-            var xLength = Math.Min(xDistance, MaxDistancePerTurn); 
+            var xLength = Math.Min(xDistance, MaxDistancePerTurn);
             var newX = Position.X + xLength * direction.X;
             var yLength = MaxDistancePerTurn - xLength;
             var newY = Position.Y + yLength * direction.Y;
