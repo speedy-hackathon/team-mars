@@ -97,7 +97,7 @@ namespace covidSim.Services
             }
 
             stepHomeCount = 0;
-            InternalState = InternalPersonState.None;
+            InternalState = InternalPersonState.Healthy;
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
         }
@@ -119,18 +119,6 @@ namespace covidSim.Services
 
             if (isCoordInField(nextPosition) )
             {
-                if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
-                {
-                    stepHomeCount++;
-                    if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
-                        InternalState = InternalPersonState.Bored;
-                }
-                else
-                {
-                    stepHomeCount = 0;
-                    InternalState = InternalPersonState.Healthy;
-                }
-                
                 Position = nextPosition;
             }
             else
@@ -138,13 +126,7 @@ namespace covidSim.Services
                 CalcNextPositionForWalkingPerson();
             }
         }
-
-        private bool IsPersonInHome(Vec nextPos, HouseCoordinates coordinates)
-        {
-            return (coordinates.LeftTopCorner.X <= nextPos.X) && (coordinates.LeftTopCorner.X + HouseCoordinates.Width >= nextPos.X) &&
-                (coordinates.LeftTopCorner.Y <= nextPos.Y) && (coordinates.LeftTopCorner.Y + HouseCoordinates.Height >= nextPos.Y);
-        }
-
+        
         private void CalcNextPositionForGoingHomePerson()
         {
             var game = Game.Instance;
