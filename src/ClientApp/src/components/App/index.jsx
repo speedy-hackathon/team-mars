@@ -73,7 +73,7 @@ export default class App extends React.Component {
   };
 
   setLocalTicks = (localTicks, isNight) => {
-    if (localTicks % 10 === 0) {
+    if (localTicks === 10) {
       this.setState({
         isNight: !isNight,
         localTicks: 0,
