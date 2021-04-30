@@ -9,7 +9,7 @@ export default function Field({ map, people, onClick }) {
       {map.map((item, i) => (
         <House key={item.id} x={item.x} y={item.y} />
       ))}
-      {people.map((item) => (
+      {people.map((item, i) => (
         <Person person={item} key={item.id} onClick={onClick} />
       ))}
     </div>

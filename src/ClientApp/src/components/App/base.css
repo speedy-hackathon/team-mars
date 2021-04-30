@@ -3,3 +3,15 @@ body {
   padding: 0;
   font-family: "Segoe UI", "Arial", "Helvetica", sans-serif;
 }
+
+.app-container {
+  transition: 500ms;
+}
+
+.night {
+  background: #37474f;
+}
+
+.night .house {
+  background: #ca9b52;
+}

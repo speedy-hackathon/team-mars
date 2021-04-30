@@ -6,6 +6,7 @@ import { gameStateUrl, userActionUrl } from "../../consts/urls";
 import errorHandler from "../../utils/errorHandler";
 import Instruction from "../Instruction";
 import ButtonRestart from "../ButtonRestart";
+import ButtonDayNight from "../ButtonDayNight";
 import Timer from "../Timer";
 
 import "./base.css";
@@ -17,24 +18,40 @@ export default class App extends React.Component {
       people: [],
       map: [],
       instructionOpen: true,
+      isNight: true,
+      localTicks: 0,
       ticks: 0,
     };
     this.intervalId = null;
+    this.timerNight = null;
   }
 
   componentWillUnmount() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+
+    if (this.timerNight) {
+      clearInterval(this.timerNight)
+    }
+  }
+
+  checkNight(isNight) {
+    return isNight ? 'night' : '';
   }
 
   render() {
-    const { people, map, instructionOpen, ticks } = this.state;
+    const { people, map, instructionOpen, ticks, isNight } = this.state;
+
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} app-container ${this.checkNight(isNight)}`}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
         <h1 className={styles.title}>Симулятор COVID</h1>
-        <ButtonRestart />
+        <ButtonRestart restart={this.restart}/>
+        <ButtonDayNight
+          changeNight={this.changeNight}
+          isNight={isNight}
+        />
         <Timer ticks={ticks} />
         <Field map={map} people={people} onClick={this.personClick} />
       </div>
@@ -47,9 +64,26 @@ export default class App extends React.Component {
     });
 
     this.getNewStateFromServer();
+    this.setLocalTicks(this.state.localTicks, this.state.isNight);
 
     this.intervalId = setInterval(this.getNewStateFromServer, DELAY);
+    this.timerNight = setInterval(() => {
+      this.setLocalTicks(this.state.localTicks, this.state.isNight)}, DELAY
+    );
   };
+
+  setLocalTicks = (localTicks, isNight) => {
+    if (localTicks === 10) {
+      this.setState({
+        isNight: !isNight,
+        localTicks: 0,
+      })
+    }
+
+    this.setState({
+      localTicks: localTicks + 1,
+    });
+  }
 
   personClick = (id) => {
     fetch(userActionUrl, {
@@ -75,4 +109,22 @@ export default class App extends React.Component {
         });
       });
   };
+
+  changeNight = (isNight) => {
+    this.setState({
+      isNight: !isNight,
+      localTicks: 1,
+    })
+  };
+
+  restart = () => {
+    fetch(gameStateUrl, {
+      method: "POST"
+    }).then(errorHandler);
+
+    this.setState({
+      isNight: false,
+      localTicks: 1,
+    })
+  }
 }
