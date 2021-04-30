@@ -1,11 +1,11 @@
 import React from "react";
-import {gameRestartUrl} from "../../consts/urls";
+import {gameStateUrl} from "../../consts/urls";
 import errorHandler from "../../utils/errorHandler";
 import styles from "./style.module.css";
 
 export default class ButtonRestart extends React.Component {
   restart() {
-    fetch(gameRestartUrl, {
+    fetch(gameStateUrl, {
       method: "POST"
     }).then(errorHandler);
   }
