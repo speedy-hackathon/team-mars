@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using covidSim.Models;
 
 namespace covidSim.Services
@@ -6,6 +7,7 @@ namespace covidSim.Services
     public class Person
     {
         private const int MaxDistancePerTurn = 30;
+        private const int StepsForHealing = 45;
         private const int MaxStartAge = 70;
         private static Random random = new Random();
         private PersonState state = PersonState.AtHome;
@@ -13,8 +15,9 @@ namespace covidSim.Services
         private int stepHomeCount;
         private CityMap cityMap;
 
-        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.None,
+        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.Healthy,
             bool isNew = false)
+
         {
             Id = id;
             age = isNew ? 0 : random.Next(MaxStartAge);
@@ -32,10 +35,11 @@ namespace covidSim.Services
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
-        private int sickStepsCount;
+        private int stepsWithSick;
 
         public void CalcNextStep()
         {
+            ProcessSickState();
             switch (state)
             {
                 case PersonState.AtHome:
@@ -48,6 +52,19 @@ namespace covidSim.Services
                     CalcNextPositionForGoingHomePerson();
                     break;
             }
+        }
+
+        private void ProcessSickState()
+        {
+            if (InternalState != InternalPersonState.Sick)
+            {
+                stepsWithSick = 0;
+                return;
+            }
+
+            stepsWithSick++;
+            if (stepsWithSick >= StepsForHealing)
+                InternalState = InternalPersonState.Healthy;
         }
 
         public void IncreaseAge() => age++;
@@ -80,7 +97,7 @@ namespace covidSim.Services
             }
 
             stepHomeCount = 0;
-            InternalState = InternalPersonState.None;
+            InternalState = InternalPersonState.Healthy;
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
         }
@@ -100,7 +117,7 @@ namespace covidSim.Services
             var delta = new Vec(xLength * direction.X, yLength * direction.Y);
             var nextPosition = new Vec(Position.X + delta.X, Position.Y + delta.Y);
 
-            if (isCoordInField(nextPosition))
+            if (isCoordInField(nextPosition) )
             {
                 Position = nextPosition;
             }
@@ -109,7 +126,7 @@ namespace covidSim.Services
                 CalcNextPositionForWalkingPerson();
             }
         }
-
+        
         private void CalcNextPositionForGoingHomePerson()
         {
             var game = Game.Instance;

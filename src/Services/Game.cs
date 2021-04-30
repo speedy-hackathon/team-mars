@@ -45,7 +45,8 @@ namespace covidSim.Services
             return healthyPeople.Concat(sickPeople).ToList();
         }
 
-        private IEnumerable<Person> CreatePeoples(int count, InternalPersonState internalPersonState = InternalPersonState.None)
+        private IEnumerable<Person> CreatePeoples(int count, InternalPersonState internalPersonState = InternalPersonState.Healthy)
+          
         {
             return Enumerable
                 .Repeat(0, count)
