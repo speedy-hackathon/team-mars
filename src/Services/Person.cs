@@ -9,21 +9,23 @@ namespace covidSim.Services
         private static Random random = new Random();
         private PersonState state = PersonState.AtHome;
 
-        public Person(int id, int homeId, CityMap map)
+        public Person(int id, int homeId, CityMap map, bool isSick = false)
         {
             Id = id;
             HomeId = homeId;
             homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
             Position = GetNewPersonAtHomePosition();
             nextPosition = GetNewPersonAtHomePosition();
+            IsSick = isSick;
         }
 
+
+        public bool IsSick;
         public int Id;
         public int HomeId;
         public Vec Position;
         private Vec nextPosition;
         private Vec homeCoords;
-        private Vec direction;
 
         public void CalcNextStep()
         {
@@ -53,9 +55,8 @@ namespace covidSim.Services
 
                 var distanceX = Math.Abs(Position.X - nextPosition.X);
                 var distanceY = Math.Abs(Position.Y - nextPosition.Y);
-                var deltaX = 5;
-                var deltaY = 5;
-
+                var deltaX = random.Next(MaxDistancePerTurn);
+                var deltaY = random.Next(MaxDistancePerTurn);
                 deltaX = Math.Min(distanceX, deltaX) * Math.Sign(nextPosition.X - Position.X);
                 deltaY = Math.Min(distanceY, deltaY) * Math.Sign(nextPosition.Y - Position.Y);
 
