@@ -60,7 +60,7 @@ namespace covidSim.Services
                 var distanceY = Math.Abs(Position.Y - nextPosition.Y);
                 var deltaX = random.Next(MaxDistancePerTurn);
                 var deltaY = random.Next(MaxDistancePerTurn);
-
+                
                 deltaX = Math.Min(distanceX, deltaX) * Math.Sign(nextPosition.X - Position.X);
                 deltaY = Math.Min(distanceY, deltaY) * Math.Sign(nextPosition.Y - Position.Y);
 
