@@ -13,7 +13,7 @@ namespace covidSim.Services
         private static Game _gameInstance;
         private static Random _random = new Random();
         
-        public const int PeopleCount = 300;
+        public const int PeopleCount = 320;
         public const int FieldWidth = 1000;
         public const int FieldHeight = 500;
         public const int MaxPeopleInHouse = 10;
@@ -29,12 +29,14 @@ namespace covidSim.Services
 
         private List<Person> CreatePopulation()
         {
-            var healthyPeoples = CreatePeoples(
-                (int) Math.Ceiling(PeopleCount * 0.95));
-            var sickPeoples = CreatePeoples(
-                (int) Math.Ceiling(PeopleCount * 0.05), true);
+            var sickPeopleCount = (int) Math.Ceiling(PeopleCount * 0.05);
+            
+            var healthyPeople = CreatePeoples(
+                PeopleCount - sickPeopleCount);
+            var sickPeople = CreatePeoples(
+                sickPeopleCount, true);
 
-            return healthyPeoples.Concat(sickPeoples).ToList();
+            return healthyPeople.Concat(sickPeople).ToList();
         }
 
         private IEnumerable<Person> CreatePeoples(int count, bool sick = false)
