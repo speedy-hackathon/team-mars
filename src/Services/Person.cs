@@ -48,7 +48,7 @@ namespace covidSim.Services
 
         private void CalcNextStepForPersonAtHome()
         {
-            var goingWalk = random.NextDouble() < 0.05;
+            var goingWalk = random.NextDouble() < 0.005;
             if (!goingWalk)
             {
                 if (nextPosition.X == Position.X && nextPosition.Y == Position.Y)
