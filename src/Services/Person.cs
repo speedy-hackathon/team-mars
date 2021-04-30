@@ -35,6 +35,10 @@ namespace covidSim.Services
         public void CalcNextStep(List<Person> people)
         {
             ProcessDeadState(people);
+            
+            if (InternalState == InternalPersonState.Dead)
+                return;
+            
             switch (state)
             {
                 case PersonState.AtHome:
