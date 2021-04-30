@@ -24,7 +24,6 @@ namespace covidSim.Services
             nextPosition = GetNewPersonAtHomePosition();
         }
 
-
         public InternalPersonState InternalState;
         public int Id;
         public int HomeId;
@@ -73,6 +72,10 @@ namespace covidSim.Services
                     nextPosition = GetNewPersonAtHomePosition();
                 }
 
+                stepHomeCount++;
+                if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
+                    InternalState = InternalPersonState.Bored;
+
                 var distanceX = Math.Abs(Position.X - nextPosition.X);
                 var distanceY = Math.Abs(Position.Y - nextPosition.Y);
                 var deltaX = random.Next(MaxDistancePerTurn);
@@ -86,6 +89,8 @@ namespace covidSim.Services
                 return;
             }
 
+            stepHomeCount = 0;
+            InternalState = InternalPersonState.None;
             state = PersonState.Walking;
             CalcNextPositionForWalkingPerson();
         }
@@ -137,7 +142,8 @@ namespace covidSim.Services
         {
             var game = Game.Instance;
             var homeCoord = game.Map.Houses[HomeId].Coordinates.LeftTopCorner;
-            var homeCenter = new Vec(homeCoord.X + HouseCoordinates.Width / 2, homeCoord.Y + HouseCoordinates.Height / 2);
+            var homeCenter = new Vec(homeCoord.X + HouseCoordinates.Width / 2,
+                homeCoord.Y + HouseCoordinates.Height / 2);
 
             var xDiff = homeCenter.X - Position.X;
             var yDiff = homeCenter.Y - Position.Y;
@@ -154,7 +160,7 @@ namespace covidSim.Services
 
             var direction = new Vec(Math.Sign(xDiff), Math.Sign(yDiff));
 
-            var xLength = Math.Min(xDistance, MaxDistancePerTurn); 
+            var xLength = Math.Min(xDistance, MaxDistancePerTurn);
             var newX = Position.X + xLength * direction.X;
             var yLength = MaxDistancePerTurn - xLength;
             var newY = Position.Y + yLength * direction.Y;
