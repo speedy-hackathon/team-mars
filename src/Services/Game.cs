@@ -29,12 +29,14 @@ namespace covidSim.Services
 
         private List<Person> CreatePopulation()
         {
-            var healthyPeoples = CreatePeoples(
-                (int) Math.Ceiling(PeopleCount * 0.95));
-            var sickPeoples = CreatePeoples(
-                (int) Math.Ceiling(PeopleCount * 0.05), true);
+            var sickPeopleCount = (int) Math.Ceiling(PeopleCount * 0.05);
+            
+            var healthyPeople = CreatePeoples(
+                PeopleCount - sickPeopleCount);
+            var sickPeople = CreatePeoples(
+                sickPeopleCount, true);
 
-            return healthyPeoples.Concat(sickPeoples).ToList();
+            return healthyPeople.Concat(sickPeople).ToList();
         }
 
         private IEnumerable<Person> CreatePeoples(int count, bool sick = false)
