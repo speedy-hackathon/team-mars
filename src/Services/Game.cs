@@ -8,6 +8,7 @@ namespace covidSim.Services
     {
         public List<Person> People;
         public CityMap Map;
+        public int Ticks = 0;
         private DateTime _lastUpdate;
 
         private static Game _gameInstance;
@@ -27,7 +28,10 @@ namespace covidSim.Services
 
         public static Game Instance => _gameInstance ?? (_gameInstance = new Game());
 
-        public static Game Restart() => new Game();
+        public static void Restart()
+        {
+            _gameInstance = new Game();
+        }
 
         private List<Person> CreatePopulation()
         {
@@ -80,7 +84,9 @@ namespace covidSim.Services
             foreach (var person in People)
             {
                 person.CalcNextStep();
+                person.IncreaseAge();
             }
+            Ticks += 1;
         }
     }
 }
