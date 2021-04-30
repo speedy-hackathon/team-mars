@@ -80,6 +80,8 @@ namespace covidSim.Services
             foreach (var person in People.ToArray())
             {
                 person.CalcNextStep(People);
+                if (person.InternalState == InternalPersonState.NeedDeleted)
+                    People.Remove(person);
             }
         }
     }

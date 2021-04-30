@@ -5,6 +5,7 @@ namespace covidSim.Services
         None,
         Sick,
         Bored,
-        Dead
+        Dead,
+        NeedDeleted
     }
 }
