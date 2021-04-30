@@ -22,8 +22,8 @@ export default function Field({map, people, onClick, clickedPerson, dictionary})
   function createContext() {
     let example = document.getElementById("canvas");
     let ctx = example.getContext('2d');
-    example.width = 1034;
-    example.height = 522;
+    example.width = width;
+    example.height = height;
     return ctx;
   }
 
