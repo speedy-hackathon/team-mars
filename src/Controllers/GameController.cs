@@ -17,7 +17,7 @@ namespace covidSim.Controllers
         [HttpPost]
         public IActionResult Restart()
         {
-            var game = Game.Restart;
+            var game = Game.Restart();
             return Ok(game);
         }
     }
