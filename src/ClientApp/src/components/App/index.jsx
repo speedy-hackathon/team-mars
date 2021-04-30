@@ -7,6 +7,7 @@ import errorHandler from "../../utils/errorHandler";
 import Instruction from "../Instruction";
 import ButtonRestart from "../ButtonRestart";
 import ButtonDayNight from "../ButtonDayNight";
+import Timer from "../Timer";
 
 import "./base.css";
 
@@ -19,6 +20,7 @@ export default class App extends React.Component {
       instructionOpen: true,
       isNight: true,
       localTicks: 0,
+      ticks: 0,
     };
     this.intervalId = null;
     this.timerNight = null;
@@ -39,7 +41,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { people, map, instructionOpen, isNight } = this.state;
+    const { people, map, instructionOpen, ticks, isNight } = this.state;
+
     return (
       <div className={`${styles.root} app-container ${this.checkNight(isNight)}`}>
         {instructionOpen && <Instruction onClose={this.closeInstruction} />}
@@ -49,6 +52,7 @@ export default class App extends React.Component {
           changeNight={this.changeNight}
           isNight={isNight}
         />
+        <Timer ticks={ticks} />
         <Field map={map} people={people} onClick={this.personClick} />
       </div>
     );
@@ -100,6 +104,7 @@ export default class App extends React.Component {
         this.setState({
           people: game.people,
           map: game.map.houses.map((i) => i.coordinates.leftTopCorner),
+          ticks: game.ticks
         });
       });
   };

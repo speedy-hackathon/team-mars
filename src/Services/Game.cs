@@ -8,6 +8,7 @@ namespace covidSim.Services
     {
         public List<Person> People;
         public CityMap Map;
+        public int Ticks = 0;
         private DateTime _lastUpdate;
 
         private static Game _gameInstance;
@@ -39,16 +40,17 @@ namespace covidSim.Services
             var healthyPeople = CreatePeoples(
                 PeopleCount - sickPeopleCount);
             var sickPeople = CreatePeoples(
-                sickPeopleCount, true);
+                sickPeopleCount, InternalPersonState.Sick);
 
             return healthyPeople.Concat(sickPeople).ToList();
         }
 
-        private IEnumerable<Person> CreatePeoples(int count, bool sick = false)
+        private IEnumerable<Person> CreatePeoples(int count, InternalPersonState internalPersonState = InternalPersonState.Healthy)
+          
         {
             return Enumerable
                 .Repeat(0, count)
-                .Select((_, index) => new Person(index, FindHome(), Map, sick));
+                .Select((_, index) => new Person(index, FindHome(), Map, internalPersonState));
         }
 
         private int FindHome()
@@ -83,7 +85,9 @@ namespace covidSim.Services
             foreach (var person in People)
             {
                 person.CalcNextStep();
+                person.IncreaseAge();
             }
+            Ticks += 1;
         }
     }
 }
