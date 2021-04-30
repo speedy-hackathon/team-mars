@@ -84,6 +84,7 @@ namespace covidSim.Services
             foreach (var person in People)
             {
                 person.CalcNextStep();
+                person.IncreaseAge();
             }
             Ticks += 1;
         }

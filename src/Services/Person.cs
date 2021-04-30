@@ -6,14 +6,18 @@ namespace covidSim.Services
     public class Person
     {
         private const int MaxDistancePerTurn = 30;
+        private const int MaxStartAge = 70;
         private static Random random = new Random();
         private PersonState state = PersonState.AtHome;
+        private int age;
         private int stepHomeCount;
         private CityMap cityMap;
 
-        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.None)
+        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.None,
+            bool isNew = false)
         {
             Id = id;
+            age = isNew ? 0 : random.Next(MaxStartAge);
             HomeId = homeId;
             InternalState = internalState;
             cityMap = map;
@@ -45,6 +49,8 @@ namespace covidSim.Services
                     break;
             }
         }
+
+        public void IncreaseAge() => age++;
 
         private void CalcNextStepForPersonAtHome()
         {
