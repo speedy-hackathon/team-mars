@@ -8,19 +8,22 @@ namespace covidSim.Services
         private const int MaxDistancePerTurn = 30;
         private static Random random = new Random();
         private PersonState state = PersonState.AtHome;
+        private int stepHomeCount;
+        private CityMap cityMap;
 
-        public Person(int id, int homeId, CityMap map, bool isSick = false)
+        public Person(int id, int homeId, CityMap map, InternalPersonState internalState = InternalPersonState.None)
         {
             Id = id;
             HomeId = homeId;
+            InternalState = internalState;
+            cityMap = map;
             homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
             Position = GetNewPersonAtHomePosition();
             nextPosition = GetNewPersonAtHomePosition();
-            IsSick = isSick;
         }
 
 
-        public bool IsSick;
+        public InternalPersonState InternalState;
         public int Id;
         public int HomeId;
         public Vec Position;
@@ -85,14 +88,32 @@ namespace covidSim.Services
             var delta = new Vec(xLength * direction.X, yLength * direction.Y);
             var nextPosition = new Vec(Position.X + delta.X, Position.Y + delta.Y);
 
-            if (isCoordInField(nextPosition))
+            if (isCoordInField(nextPosition) )
             {
+                if (IsPersonInHome(nextPosition, cityMap.Houses[HomeId].Coordinates))
+                {
+                    stepHomeCount++;
+                    if (stepHomeCount >= 5 && InternalState != InternalPersonState.Bored)
+                        InternalState = InternalPersonState.Bored;
+                }
+                else
+                {
+                    stepHomeCount = 0;
+                    InternalState = InternalPersonState.None;
+                }
+                
                 Position = nextPosition;
             }
             else
             {
                 CalcNextPositionForWalkingPerson();
             }
+        }
+
+        private bool IsPersonInHome(Vec nextPos, HouseCoordinates coordinates)
+        {
+            return (coordinates.LeftTopCorner.X <= nextPos.X) && (coordinates.LeftTopCorner.X + HouseCoordinates.Width >= nextPos.X) &&
+                (coordinates.LeftTopCorner.Y <= nextPos.Y) && (coordinates.LeftTopCorner.Y + HouseCoordinates.Height >= nextPos.Y);
         }
 
         private void CalcNextPositionForGoingHomePerson()
