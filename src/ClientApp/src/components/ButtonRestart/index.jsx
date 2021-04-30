@@ -6,10 +6,7 @@ import styles from "./style.module.css";
 export default class ButtonRestart extends React.Component {
   restart() {
     fetch(gameStateUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      method: "POST"
     }).then(errorHandler);
   }
 
