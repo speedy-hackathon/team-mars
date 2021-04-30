@@ -1,9 +1,14 @@
+using System;
+
 namespace covidSim.Services
 {
+    [Flags]
     public enum InternalPersonState
     {
-        None,
+        Healthy,
         Sick,
-        Bored
+        Bored,
+        Dead,
+        NeedDeleted
     }
 }
