@@ -8,6 +8,7 @@ namespace covidSim.Services
     {
         public List<Person> People;
         public CityMap Map;
+        public int Ticks = 0;
         private DateTime _lastUpdate;
 
         private static Game _gameInstance;
@@ -79,6 +80,7 @@ namespace covidSim.Services
             {
                 person.CalcNextStep();
             }
+            Ticks += 1;
         }
     }
 }
