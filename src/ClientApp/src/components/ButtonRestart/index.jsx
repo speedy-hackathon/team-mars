@@ -10,9 +10,6 @@ export default class ButtonRestart extends React.Component {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        state: 'restart',
-      }),
     }).then(errorHandler);
   }
 
