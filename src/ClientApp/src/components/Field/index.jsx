@@ -11,7 +11,7 @@ export default function Field({ map, people, onClick }) {
         <House key={uuidv4()} x={item.x} y={item.y} />
       ))}
       {people.map((item) => (
-        <Person person={item} key={uuidv4()} onClick={onClick} />
+        <Person person={item} key={item.id} onClick={onClick} />
       ))}
     </div>
   );
