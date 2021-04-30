@@ -14,8 +14,8 @@ namespace covidSim.Services
             Id = id;
             HomeId = homeId;
             homeCoords = map.Houses[homeId].Coordinates.LeftTopCorner;
-            Position = GetNewPersonPosition();
-            NextPosition = GetNewPersonPosition();
+            Position = GetNewPersonAtHomePosition();
+            NextPosition = GetNewPersonAtHomePosition();
         }
 
         public int Id;
@@ -46,28 +46,20 @@ namespace covidSim.Services
             var goingWalk = random.NextDouble() < 0.005;
             if (!goingWalk)
             {
-                // if (Id == 0)
-                // {
-                    if (NextPosition.X == Position.X && NextPosition.Y == Position.Y)
-                    {
-                        NextPosition = GetNewPersonPosition();
-                    }
+                if (NextPosition.X == Position.X && NextPosition.Y == Position.Y)
+                {
+                    NextPosition = GetNewPersonAtHomePosition();
+                }
 
-                    var distanceX = Math.Abs(Position.X - NextPosition.X);
-                    var distanceY = Math.Abs(Position.Y - NextPosition.Y);
-                    var deltaX = 5;
-                    var deltaY = 5;
-                    if (Id == 1)
-                    {
-                        Console.WriteLine(Position.X);
-                        Console.WriteLine(Position.Y);
-                    }
+                var distanceX = Math.Abs(Position.X - NextPosition.X);
+                var distanceY = Math.Abs(Position.Y - NextPosition.Y);
+                var deltaX = 5;
+                var deltaY = 5;
 
-                    deltaX = Math.Min(distanceX, deltaX) * Math.Sign(NextPosition.X - Position.X);
-                    deltaY = Math.Min(distanceY, deltaY) * Math.Sign(NextPosition.Y - Position.Y);
+                deltaX = Math.Min(distanceX, deltaX) * Math.Sign(NextPosition.X - Position.X);
+                deltaY = Math.Min(distanceY, deltaY) * Math.Sign(NextPosition.Y - Position.Y);
 
-                    Position = new Vec(Position.X + deltaX, Position.Y + deltaY);
-                // }
+                Position = new Vec(Position.X + deltaX, Position.Y + deltaY);
 
                 return;
             }
@@ -76,29 +68,11 @@ namespace covidSim.Services
             CalcNextPositionForWalkingPerson();
         }
 
-        private Vec GetNewPersonPosition()
+        private Vec GetNewPersonAtHomePosition()
         {
             var x = homeCoords.X + random.Next(HouseCoordinates.Width);
             var y = homeCoords.Y + random.Next(HouseCoordinates.Height);
             return new Vec(x, y);
-        }
-
-        private void CalcNextPositionForAtHomePerson()
-        {
-            var xLength = random.Next(MaxDistancePerTurn);
-            var yLength = MaxDistancePerTurn - xLength;
-            var direction = ChooseDirection();
-            var delta = new Vec(xLength * direction.X, yLength * direction.Y);
-            var nextPosition = new Vec(Position.X + delta.X, Position.Y + delta.Y);
-
-            if (isCoordInField(nextPosition))
-            {
-                Position = nextPosition;
-            }
-            else
-            {
-                CalcNextPositionForWalkingPerson();
-            }
         }
 
         private void CalcNextPositionForWalkingPerson()
