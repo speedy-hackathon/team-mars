@@ -63,7 +63,6 @@ export default class App extends React.Component {
       .then(errorHandler)
       .then((res) => res.json())
       .then((game) => {
-        console.log(game);
         this.setState({
           people: game.people,
           map: game.map.houses.map((i) => i.coordinates.leftTopCorner),
