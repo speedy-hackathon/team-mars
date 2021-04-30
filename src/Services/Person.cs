@@ -55,7 +55,7 @@ namespace covidSim.Services
 
         private void ProcessDeadState(List<Person> people)
         {
-            if (InternalState == InternalPersonState.Sick && random.NextDouble() < 0.8)
+            if (InternalState == InternalPersonState.Sick && random.NextDouble() < 0.00003)
             {
                 InternalState = InternalPersonState.Dead;
                 return;
