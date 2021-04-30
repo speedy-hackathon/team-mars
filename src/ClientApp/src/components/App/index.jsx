@@ -18,7 +18,7 @@ export default class App extends React.Component {
       map: [],
       instructionOpen: true,
       dictionary: new Map(),
-      clickedPerson: null
+      clickedPerson: null,
       ticks: 0,
     };
     this.intervalId = null;
@@ -81,7 +81,7 @@ export default class App extends React.Component {
         this.setState({
           people: game.people,
           map: game.map.houses.map((i) => i.coordinates.leftTopCorner),
-          dictionary: this.addNewPos(game.people, this.state.dictionary)
+          dictionary: this.addNewPos(game.people, this.state.dictionary),
           ticks: game.ticks
         });
       });
